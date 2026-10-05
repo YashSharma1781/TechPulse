@@ -39,24 +39,25 @@
   // ---------- Leadership ----------
   function renderLeadership() {
     const a = TEAM.academicCoordinator;
+    const dr = /^(Dr\.?)\s+(.*)$/i.exec(a.name);
+    const nameHTML = dr ? `<em>${esc(dr[1])}</em> ${esc(dr[2])}` : esc(a.name);
     $('#coordMount').innerHTML = `
-      <article class="coord-card t-rise" style="--c:#9890C8" data-open="coord">
-        <div class="coord-photo">
-          <span class="orbit o1"></span>
-          <span class="orbit o2"><i></i></span>
-          ${avatar(a, null, '#9890C8', 'coord-avatar')}
+      <article class="coord-card t-rise" data-open="coord">
+        <div class="coord-media">
+          <span class="coord-block"></span>
+          <div class="coord-photo">${avatar(a, null, '#C8352B', 'coord-avatar')}</div>
+          <svg class="coord-stamp" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="59" fill="#121212"/>
+            <defs><path id="stampPath" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs>
+            <g class="stamp-ring"><text font-family="Space Grotesk, sans-serif" font-size="9.5" font-weight="700" fill="#EFEAE0"><textPath href="#stampPath" textLength="274" lengthAdjust="spacing">ACADEMIC COORDINATOR &#8226; TECHPULSE &#8226; </textPath></text></g>
+            <image href="logo.png" x="38" y="42" width="44" height="34"/>
+          </svg>
         </div>
         <div class="coord-info">
-          <span class="chip">&#9733; Academic Coordinator</span>
-          <h3 class="coord-name">${esc(a.name)}</h3>
-          <p class="coord-role">Guiding TechPulse &middot; CCE, CGC University</p>
-          <svg class="coord-ecg" viewBox="0 0 420 60" preserveAspectRatio="none" aria-hidden="true">
-            <defs><linearGradient id="coordGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="#6CC47F"/><stop offset="0.6" stop-color="#9890C8"/><stop offset="1" stop-color="#ED3327"/>
-            </linearGradient></defs>
-            <path class="ecg-t" d="M0,30 H120 l12,-8 l10,8 H180 l8,6 l12,-34 l14,58 l10,-30 H300 l14,-10 l14,10 H420" pathLength="100" vector-effect="non-scaling-stroke"/>
-            <path class="ecg-p" d="M0,30 H120 l12,-8 l10,8 H180 l8,6 l12,-34 l14,58 l10,-30 H300 l14,-10 l14,10 H420" pathLength="100" vector-effect="non-scaling-stroke"/>
-          </svg>
+          <span class="coord-label">Academic Coordinator</span>
+          <h3 class="coord-name">${nameHTML}</h3>
+          <div class="coord-rule"></div>
+          <p class="coord-role">TechPulse &middot; CCE, CGC University</p>
           <span class="tap-hint">Tap to view</span>
         </div>
       </article>`;

@@ -124,6 +124,23 @@
     </div>
   </div>
 
+  <!-- transition: About -->
+  <div class="sx" style="--from:#07090D;--to:#FFFFFF;--ink-from:#F4F5F7;--ink-to:#080808" aria-hidden="true">
+    <div class="sx-stick">
+      <div class="sx-ecg">
+        <svg viewBox="0 0 1600 240" preserveAspectRatio="none"><path d="M0,120 L690,120 L730,108 L750,120 L775,120 L790,132 L812,18 L836,222 L852,120 L900,120 L935,100 L968,120 L1600,120" pathLength="100" vector-effect="non-scaling-stroke"/></svg>
+        <i class="sx-dot"></i>
+      </div>
+      <div class="sx-iris">
+        <div class="sx-label">
+          <span class="sx-no">01 / 06</span>
+          <div class="sx-title">About</div>
+          <p class="sx-tag">Who we are</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ABOUT: light, editorial, animated -->
   <section class="section about-section" id="about">
     <div class="about-bg" aria-hidden="true">
@@ -193,6 +210,23 @@
     </div>
   </section>
 
+  <!-- transition: Leadership -->
+  <div class="sx" style="--from:#FFFFFF;--to:#07090D;--ink-from:#080808;--ink-to:#F4F5F7" aria-hidden="true">
+    <div class="sx-stick">
+      <div class="sx-ecg">
+        <svg viewBox="0 0 1600 240" preserveAspectRatio="none"><path d="M0,120 L690,120 L730,108 L750,120 L775,120 L790,132 L812,18 L836,222 L852,120 L900,120 L935,100 L968,120 L1600,120" pathLength="100" vector-effect="non-scaling-stroke"/></svg>
+        <i class="sx-dot"></i>
+      </div>
+      <div class="sx-iris">
+        <div class="sx-label">
+          <span class="sx-no">02 / 06</span>
+          <div class="sx-title">Leadership</div>
+          <p class="sx-tag">The people behind the pulse</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- LEADERSHIP & PULSE MEMBERS -->
   <section class="section team-section" id="team">
     <div class="team-canvas-wrap" aria-hidden="true"><canvas id="teamCanvas" class="team-canvas"></canvas></div>
@@ -230,35 +264,67 @@
     </div>
   </section>
 
-  <div class="line-divider"></div>
+  <!-- transition: Events -->
+  <div class="sx" style="--from:#07090D;--to:#ECE8DD;--ink-from:#F4F5F7;--ink-to:#121212" aria-hidden="true">
+    <div class="sx-stick">
+      <div class="sx-ecg">
+        <svg viewBox="0 0 1600 240" preserveAspectRatio="none"><path d="M0,120 L690,120 L730,108 L750,120 L775,120 L790,132 L812,18 L836,222 L852,120 L900,120 L935,100 L968,120 L1600,120" pathLength="100" vector-effect="non-scaling-stroke"/></svg>
+        <i class="sx-dot"></i>
+      </div>
+      <div class="sx-iris">
+        <div class="sx-label">
+          <span class="sx-no">03 / 06</span>
+          <div class="sx-title">Events</div>
+          <p class="sx-tag">What we have organised</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- PAST 5 EVENTS -->
-  <section class="section" id="events">
+  <section class="section events-section" id="events">
     <div class="container">
-      <div class="section-head reveal">
+      <div class="ev-head">
         <div>
-          <span class="eyebrow">Track Record</span>
-          <h2 style="margin-top: 12px;">5 Events Organised Till Now</h2>
+          <span class="ev-label">Track record &mdash; 2025/26</span>
+          <h2 class="ev-title"><span class="ev-count">5</span> Events <em>organised till now</em></h2>
         </div>
-        <p class="section-intro-text">
-          Click any card to read case study details.
-        </p>
+        <p class="ev-note">Hover a row to see the photo. Click it for the full story.</p>
       </div>
 
-      <!-- Filter Tabs -->
-      <div class="filter-tabs reveal">
-        <button class="tab-btn active" data-filter="All">All Events (5)</button>
-        <button class="tab-btn" data-filter="Hackathon">Hackathons</button>
-        <button class="tab-btn" data-filter="Workshop">Workshops</button>
-        <button class="tab-btn" data-filter="Coding">Coding Contests</button>
-        <button class="tab-btn" data-filter="Seminar">Seminars</button>
+      <div class="ev-filters">
+        <button class="tab-btn active" data-filter="All">All (5)</button>
+        <button class="tab-btn" data-filter="Hackathon">Hackathons (1)</button>
+        <button class="tab-btn" data-filter="Workshop">Workshops (2)</button>
+        <button class="tab-btn" data-filter="Coding">Coding contests (1)</button>
+        <button class="tab-btn" data-filter="Seminar">Seminars (1)</button>
       </div>
 
-      <div class="events-junca-grid" id="eventsGrid"></div>
+      <div class="ev-list" id="eventsGrid"></div>
+
+      <div class="ev-foot">
+        <span>Next up</span>
+        <a href="#upcoming">See the upcoming event &nearr;</a>
+      </div>
     </div>
   </section>
 
-  <div class="line-divider"></div>
+  <!-- transition: Upcoming -->
+  <div class="sx" style="--from:#ECE8DD;--to:#07090D;--ink-from:#121212;--ink-to:#F4F5F7" aria-hidden="true">
+    <div class="sx-stick">
+      <div class="sx-ecg">
+        <svg viewBox="0 0 1600 240" preserveAspectRatio="none"><path d="M0,120 L690,120 L730,108 L750,120 L775,120 L790,132 L812,18 L836,222 L852,120 L900,120 L935,100 L968,120 L1600,120" pathLength="100" vector-effect="non-scaling-stroke"/></svg>
+        <i class="sx-dot"></i>
+      </div>
+      <div class="sx-iris">
+        <div class="sx-label">
+          <span class="sx-no">04 / 06</span>
+          <div class="sx-title">Upcoming</div>
+          <p class="sx-tag">What comes next</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- UPCOMING EVENT -->
   <section class="section" id="upcoming">
@@ -277,7 +343,22 @@
     </div>
   </section>
 
-  <div class="line-divider"></div>
+  <!-- transition: Department -->
+  <div class="sx" style="--from:#07090D;--to:#0E1218;--ink-from:#F4F5F7;--ink-to:#F4F5F7" aria-hidden="true">
+    <div class="sx-stick">
+      <div class="sx-ecg">
+        <svg viewBox="0 0 1600 240" preserveAspectRatio="none"><path d="M0,120 L690,120 L730,108 L750,120 L775,120 L790,132 L812,18 L836,222 L852,120 L900,120 L935,100 L968,120 L1600,120" pathLength="100" vector-effect="non-scaling-stroke"/></svg>
+        <i class="sx-dot"></i>
+      </div>
+      <div class="sx-iris">
+        <div class="sx-label">
+          <span class="sx-no">05 / 06</span>
+          <div class="sx-title">Department</div>
+          <p class="sx-tag">Our home at CCE</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- CCE DEPARTMENT & CAMPUS SPOTLIGHT -->
   <section class="section" id="department" style="background: var(--bg-card);">
@@ -315,6 +396,23 @@
       </div>
     </div>
   </section>
+
+  <!-- transition: Contact -->
+  <div class="sx" style="--from:#0E1218;--to:#07090D;--ink-from:#F4F5F7;--ink-to:#F4F5F7" aria-hidden="true">
+    <div class="sx-stick">
+      <div class="sx-ecg">
+        <svg viewBox="0 0 1600 240" preserveAspectRatio="none"><path d="M0,120 L690,120 L730,108 L750,120 L775,120 L790,132 L812,18 L836,222 L852,120 L900,120 L935,100 L968,120 L1600,120" pathLength="100" vector-effect="non-scaling-stroke"/></svg>
+        <i class="sx-dot"></i>
+      </div>
+      <div class="sx-iris">
+        <div class="sx-label">
+          <span class="sx-no">06 / 06</span>
+          <div class="sx-title">Contact</div>
+          <p class="sx-tag">Say hello</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- CONTACT & FAQ -->
   <section class="section" id="contact">

@@ -148,6 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
   initJourney();
   initAbout();
+  initEventRows();
+  initSectionTransitions();
   initTechpulseRobot();
   initFilterTabs();
   renderEvents();
@@ -734,38 +736,134 @@ function initFilterTabs() {
   });
 }
 
-// Render event cards
+// Render events as a printed-programme list
 function renderEvents() {
   const container = document.getElementById('eventsGrid');
   if (!container) return;
 
-  const events = AppState.data.events.filter(e =>
+  const all = AppState.data.events;
+  const events = all.filter(e =>
     AppState.activeFilter === 'All' || e.category.toLowerCase() === AppState.activeFilter.toLowerCase()
   );
 
-  container.innerHTML = events.map(evt => `
-    <div class="junca-card reveal ${AppState.isAdmin ? 'admin-mode-active' : ''}">
-      <div class="junca-card-media">
-        <img src="${evt.image}" alt="${evt.title}" class="junca-card-img" loading="lazy" />
-        <span class="junca-card-category">${evt.category}</span>
-        <span class="junca-card-date">${evt.date}</span>
+  container.innerHTML = events.map(evt => {
+    const no = String(all.indexOf(evt) + 1).padStart(2, '0');
+    const [main, ...rest] = evt.title.split(' - ');
+    const sub = rest.join(' - ');
+    return `
+    <article class="ev-row reveal" data-id="${evt.id}" data-img="${evt.image}" tabindex="0" role="button" aria-label="${evt.title}">
+      <span class="ev-no">${no}</span>
+      <span class="ev-date">${evt.date}</span>
+      <div class="ev-main">
+        <h3 class="ev-name">${main}</h3>
+        ${sub ? `<span class="ev-sub">${sub}</span>` : ''}
+        <p class="ev-desc">${evt.description}</p>
       </div>
-      <div class="junca-card-content">
-        <h3 class="junca-card-title">${evt.title}</h3>
-        <p class="junca-card-desc">${evt.description}</p>
-        <div class="junca-card-footer">
-          <button class="btn btn-secondary btn-sm" onclick="openEventModal('${evt.id}')">
-            Read Case Study &rarr;
-          </button>
-          <button class="edit-trigger-btn" onclick="openEditEventModal('${evt.id}')">
-            Edit
-          </button>
-        </div>
+      <div class="ev-meta">
+        <span class="ev-venue">${evt.venue}</span>
+        <span class="ev-cat">${evt.category}</span>
       </div>
-    </div>
-  `).join('');
+      <span class="ev-go">${evt.attendees}+ attended <i>&nearr;</i></span>
+      <img class="ev-thumb" src="${evt.image}" alt="" loading="lazy" />
+    </article>`;
+  }).join('');
 
   initScrollReveals();
+}
+
+// Click / keyboard / hover-photo for the events list (bound once, works across re-renders)
+function initEventRows() {
+  const list = document.getElementById('eventsGrid');
+  if (!list) return;
+
+  list.addEventListener('click', (e) => {
+    const row = e.target.closest('.ev-row');
+    if (row) openEventModal(row.dataset.id);
+  });
+  list.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('ev-row')) {
+      e.preventDefault();
+      openEventModal(e.target.dataset.id);
+    }
+  });
+
+  if (!window.matchMedia('(hover: hover)').matches) return;
+
+  const preview = document.createElement('div');
+  preview.className = 'ev-preview';
+  preview.innerHTML = '<img alt="">';
+  document.body.appendChild(preview);
+  const img = preview.firstElementChild;
+
+  let tx = 0, ty = 0, x = 0, y = 0, s = 0.85, ts = 0.85, on = false, raf = null;
+  function loop() {
+    x += (tx - x) * 0.16;
+    y += (ty - y) * 0.16;
+    s += (ts - s) * 0.18;
+    preview.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) rotate(-4deg) scale(${s.toFixed(3)})`;
+    raf = (on || Math.abs(ts - s) > 0.002) ? requestAnimationFrame(loop) : null;
+  }
+
+  list.addEventListener('mouseover', (e) => {
+    const row = e.target.closest('.ev-row');
+    if (!row) return;
+    if (img.getAttribute('src') !== row.dataset.img) img.src = row.dataset.img;
+    if (!on) { tx = x = e.clientX + 190; ty = y = e.clientY - 10; }
+    on = true;
+    ts = 1;
+    preview.classList.add('show');
+    if (!raf) raf = requestAnimationFrame(loop);
+  });
+  list.addEventListener('mousemove', (e) => { tx = e.clientX + 190; ty = e.clientY - 10; });
+  list.addEventListener('mouseleave', () => {
+    on = false;
+    ts = 0.85;
+    preview.classList.remove('show');
+  });
+}
+
+// ----------------------------------------------------
+// SECTION TRANSITIONS: scroll-linked heartbeat + popping circle
+// ----------------------------------------------------
+function initSectionTransitions() {
+  const clamp01 = (v) => Math.min(1, Math.max(0, v));
+  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+  const items = [...document.querySelectorAll('.sx')].map(el => {
+    const path = el.querySelector('.sx-ecg path');
+    return { el, path, dot: el.querySelector('.sx-dot'), len: path.getTotalLength() };
+  });
+  if (!items.length) return;
+
+  function update() {
+    const vh = window.innerHeight;
+    items.forEach(it => {
+      const r = it.el.getBoundingClientRect();
+      if (r.bottom < -60 || r.top > vh + 60) return;
+      const range = Math.max(1, r.height - vh);
+      const p = clamp01(-r.top / range);
+
+      // 1) the heartbeat line draws across (first ~45% of the scroll)
+      const draw = clamp01(p / 0.45);
+      it.path.style.strokeDashoffset = ((1 - draw) * 100).toFixed(2);
+      const pt = it.path.getPointAtLength(it.len * draw);
+      it.dot.style.left = (pt.x / 1600 * 100).toFixed(2) + '%';
+      it.dot.style.top = (pt.y / 240 * 100).toFixed(2) + '%';
+      it.dot.style.opacity = (draw > 0.01 && draw < 0.98) ? 1 : 0;
+
+      // 2) from the spike, a circle pops open and becomes the next section
+      const iris = easeOut(clamp01((p - 0.2) / 0.5));
+      it.el.style.setProperty('--iris', iris.toFixed(4));
+    });
+  }
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { update(); ticking = false; });
+  }, { passive: true });
+  window.addEventListener('resize', update);
+  update();
 }
 
 // Render upcoming event
