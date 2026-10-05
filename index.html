@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Techpulse | Interactive AI Robot Portal • CCE Dept, CGC University</title>
+  <meta name="description" content="Techpulse is the official student engineering portal of Chandigarh College of Engineering (CCE) at CGC University featuring an interactive floating 3D AI robot." />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Three.js 3D engine for the live robot -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+  <!-- Ambient Mesh Pattern & Canvas Overlay -->
+  <div class="bg-mesh-pattern"></div>
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- PRELOADER -->
+  <div id="preloader">
+    <img src="logo.png" alt="Techpulse logo" class="preloader-logo" />
+    <div class="preloader-title">Techpulse AI Studio</div>
+    <div class="preloader-line">
+      <div class="preloader-fill" id="preloaderFill"></div>
+    </div>
+    <div style="font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; color: var(--text-muted);">
+      INITIALIZING 3D AI ROBOT • CCE DEPT
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="#" class="brand-wordmark">
+        <img src="logo.png" alt="" class="brand-logo" />
+        <span>Techpulse</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#events" class="nav-link">Events</a></li>
+        <li><a href="#upcoming" class="nav-link">Upcoming</a></li>
+        <li><a href="#team" class="nav-link">Leadership</a></li>
+        <li><a href="#department" class="nav-link">CCE Dept</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="btn btn-red btn-sm" onclick="openJoinModal()">
+          Join Club
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SCROLL JOURNEY: hero -> close-up -> inside the robot -->
+  <div id="journey">
+    <section class="journey-stage" id="hero">
+      <!-- Live 3D robot fills the stage -->
+      <div class="robot-canvas-container" id="robotViewport"></div>
+
+      <!-- Hero copy (fades out on first scroll) -->
+      <div class="hero-overlay">
+        <div class="container">
+          <div class="hero-copy" id="heroCopy">
+            <span class="eyebrow">Department of CCE • CGC University</span>
+
+            <h1 class="hero-main-title hero-brand-title">TechPulse</h1>
+            <p class="hero-tagline">Curiosity <span class="tagline-arrow">&rarr;</span> Engineering Excellence</p>
+
+            <p class="hero-subtitle">
+              TechPulse is the CSE student activity club at CCE, CGC University, Mohali, bringing students closer to technology through engaging events, insightful webinars, hands-on workshops, competitions, and innovative learning experiences.
+            </p>
+
+            <div class="hero-actions">
+              <a href="#events" class="btn">Explore Events &rarr;</a>
+              <a href="#upcoming" class="btn btn-secondary">Next Event</a>
+            </div>
+
+            <div class="hero-stats-row">
+              <div>
+                <div class="stat-val" data-count="5">0</div>
+                <div class="stat-lbl">Events Hosted</div>
+              </div>
+              <div>
+                <div class="stat-val" style="color: var(--accent-red);" data-count="1000" data-suffix="+">0</div>
+                <div class="stat-lbl">Attendees</div>
+              </div>
+              <div>
+                <div class="stat-val" data-count="30" data-suffix="+">0</div>
+                <div class="stat-lbl">Student Coordinators</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll hint -->
+      <div class="scroll-hint" id="scrollHint">
+        <span id="scrollHintText">Scroll to get closer</span>
+        <span class="scroll-hint-arrow">&darr;</span>
+      </div>
+
+      <!-- Dark "inside the robot" overlay -->
+      <div class="enter-overlay" id="enterOverlay">
+        <canvas id="pulseCanvas" class="pulse-canvas"></canvas>
+        <div class="enter-label" id="enterLabel">
+          <img src="logo.png" alt="Techpulse logo" class="enter-logo" />
+          <span class="enter-eyebrow">Inside the robot</span>
+          <div class="enter-title">Techpulse Core</div>
+          <div class="enter-sub">Keep scrolling &darr;</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- EVERYTHING ELSE LIVES INSIDE THE ROBOT -->
+  <main id="inside">
+
+  <!-- MARQUEE TICKER -->
+  <div class="marquee-ticker">
+    <div class="marquee-track">
+      TECHPULSE • CGC UNIVERSITY • CCE DEPARTMENT • B.TECH CSE • B.TECH AI &amp; ML • B.TECH AI&amp;DS • B.TECH CYBERSECURITY • B.TECH BLOCKCHAIN • WEBINARS • HANDS ON WORKSHOP • TECH EVENTS • TECHPULSE • CGC UNIVERSITY • CCE DEPARTMENT • B.TECH CSE • B.TECH AI &amp; ML • B.TECH AI&amp;DS • B.TECH CYBERSECURITY • B.TECH BLOCKCHAIN • WEBINARS • HANDS ON WORKSHOP • TECH EVENTS • TECHPULSE • CGC UNIVERSITY • CCE DEPARTMENT • B.TECH CSE • B.TECH AI &amp; ML • B.TECH AI&amp;DS • B.TECH CYBERSECURITY • B.TECH BLOCKCHAIN • WEBINARS • HANDS ON WORKSHOP • TECH EVENTS • TECHPULSE • CGC UNIVERSITY • CCE DEPARTMENT • B.TECH CSE • B.TECH AI &amp; ML • B.TECH AI&amp;DS • B.TECH CYBERSECURITY • B.TECH BLOCKCHAIN • WEBINARS • HANDS ON WORKSHOP • TECH EVENTS • 
+    </div>
+  </div>
+
+  <!-- ABOUT: light, editorial, animated -->
+  <section class="section about-section" id="about">
+    <div class="about-bg" aria-hidden="true">
+      <span class="about-blob g"></span>
+      <span class="about-blob l"></span>
+      <svg class="ecg-bg" viewBox="0 0 1600 200" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="ecgGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#6CC47F" />
+            <stop offset="0.55" stop-color="#9890C8" />
+            <stop offset="1" stop-color="#ED3327" />
+          </linearGradient>
+        </defs>
+        <path class="ecg-track" d="M0,100 L220,100 L220,100 L260,100 L278,86 L296,100 L330,100 L344,110 L366,14 L388,162 L402,100 L450,100 L476,82 L504,100 L760,100 L800,100 L818,86 L836,100 L870,100 L884,110 L906,14 L928,162 L942,100 L990,100 L1016,82 L1044,100 L1300,100 L1340,100 L1358,86 L1376,100 L1410,100 L1424,110 L1446,14 L1468,162 L1482,100 L1530,100 L1556,82 L1584,100 L1600,100" pathLength="100" vector-effect="non-scaling-stroke" />
+        <path class="ecg-pulse" d="M0,100 L220,100 L220,100 L260,100 L278,86 L296,100 L330,100 L344,110 L366,14 L388,162 L402,100 L450,100 L476,82 L504,100 L760,100 L800,100 L818,86 L836,100 L870,100 L884,110 L906,14 L928,162 L942,100 L990,100 L1016,82 L1044,100 L1300,100 L1340,100 L1358,86 L1376,100 L1410,100 L1424,110 L1446,14 L1468,162 L1482,100 L1530,100 L1556,82 L1584,100 L1600,100" pathLength="100" vector-effect="non-scaling-stroke" />
+      </svg>
+      <div class="about-bigtext">TECHPULSE &middot; TECHPULSE &middot; TECHPULSE &middot; TECHPULSE &middot; TECHPULSE &middot; TECHPULSE &middot;</div>
+    </div>
+
+    <div class="container about-inner">
+      <div class="about-head">
+        <span class="eyebrow">Student Club</span>
+        <h2 class="about-title split" data-split>Driven by Students of <em>CCE Department</em></h2>
+        <p class="about-rooted rise">Rooted under the Department of Chandigarh College of Engineering.</p>
+      </div>
+
+      <div class="about-layout">
+        <div class="mission-card rise" id="missionCard">
+          <span class="eyebrow">Core Mission</span>
+          <h3 class="mission-title">Engineering Excellence &amp; Student Leadership</h3>
+          <p class="mission-text">
+            TechPulse gives CCE students the opportunity to explore technology, gain practical knowledge, participate in exciting events, and learn through hands-on experiences.
+          </p>
+          <ul class="mission-list">
+            <li><span class="pulse-dot"></span>Direct Supervision by CCE Faculty Coordinators</li>
+            <li><span class="pulse-dot"></span>Open Access for CCE students under PTU</li>
+          </ul>
+        </div>
+
+        <div class="pillars-stack">
+          <div class="pillar-card rise" style="--d: 0.1s">
+            <span class="pillar-num">01</span>
+            <div>
+              <h4 class="pillar-title">Workshops</h4>
+              <p class="pillar-desc">Practical labs in Ethical Hacking, AI/ML, and DevOps.</p>
+            </div>
+            <span class="pillar-arrow">&nearr;</span>
+          </div>
+          <div class="pillar-card rise" style="--d: 0.22s">
+            <span class="pillar-num">02</span>
+            <div>
+              <h4 class="pillar-title">Competitions</h4>
+              <p class="pillar-desc">Speed coding battles evaluated via automated leaderboards.</p>
+            </div>
+            <span class="pillar-arrow">&nearr;</span>
+          </div>
+          <div class="pillar-card rise" style="--d: 0.34s">
+            <span class="pillar-num">03</span>
+            <div>
+              <h4 class="pillar-title">Networking</h4>
+              <p class="pillar-desc">Connect with tech alumni, mentors, and student leaders.</p>
+            </div>
+            <span class="pillar-arrow">&nearr;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="line-divider"></div>
+
+  <!-- PAST 5 EVENTS -->
+  <section class="section" id="events">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Track Record</span>
+          <h2 style="margin-top: 12px;">5 Events Organised Till Now</h2>
+        </div>
+        <p class="section-intro-text">
+          Click any card to read case study details.
+        </p>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs reveal">
+        <button class="tab-btn active" data-filter="All">All Events (5)</button>
+        <button class="tab-btn" data-filter="Hackathon">Hackathons</button>
+        <button class="tab-btn" data-filter="Workshop">Workshops</button>
+        <button class="tab-btn" data-filter="Coding">Coding Contests</button>
+        <button class="tab-btn" data-filter="Seminar">Seminars</button>
+      </div>
+
+      <div class="events-junca-grid" id="eventsGrid"></div>
+    </div>
+  </section>
+
+  <div class="line-divider"></div>
+
+  <!-- UPCOMING EVENT -->
+  <section class="section" id="upcoming">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Next Scheduled Masterclass</span>
+          <h2 style="margin-top: 12px;">Upcoming Event</h2>
+        </div>
+        <p class="section-intro-text">
+          Claim your free student pass for our upcoming flagship cloud workshop hosted at the CCE Department.
+        </p>
+      </div>
+
+      <div id="upcomingContainer"></div>
+    </div>
+  </section>
+
+  <div class="line-divider"></div>
+
+  <!-- EXECUTIVE TEAM -->
+  <section class="section" id="team">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Executive Roster</span>
+          <h2 style="margin-top: 12px;">Meet Our Leadership Team</h2>
+        </div>
+        <p class="section-intro-text">
+          Dedicated student leaders from the CCE Department driving Techpulse forward.
+        </p>
+      </div>
+
+      <div class="team-editorial-grid" id="membersGrid"></div>
+    </div>
+  </section>
+
+  <div class="line-divider"></div>
+
+  <!-- CCE DEPARTMENT & CAMPUS SPOTLIGHT -->
+  <section class="section" id="department" style="background: var(--bg-card);">
+    <div class="container">
+      <div class="about-grid">
+        <div class="reveal-left">
+          <span class="eyebrow" style="margin-bottom: 14px;">Institutional Department</span>
+          <h2 style="font-size: 2.2rem; margin-bottom: 16px;">Chandigarh College of Engineering (CCE)</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 20px;">
+            The CCE Department at CGC University provides state-of-the-art computing infrastructure, high-performance labs, and academic guidance for student developers.
+          </p>
+          <div style="background: var(--bg-surface); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 24px;">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-red); font-weight: 500; margin-bottom: 6px;">FACULTY ADVISOR ENDORSEMENT</div>
+            <blockquote style="font-style: italic; color: var(--text-secondary); font-size: 15px; margin-bottom: 12px;">
+              "Techpulse stands as a shining example of practical technical excellence in the CCE department. Our students turn complex theories into production-ready software."
+            </blockquote>
+            <span style="font-size: 13px; color: var(--text-muted); font-weight: 500;">— Head of Department, CCE • CGC University</span>
+          </div>
+        </div>
+
+        <div class="about-editorial-box reveal-right">
+          <h3 style="margin-bottom: 20px;">CCE Department Specs</h3>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px;">
+            <li style="font-size: 15px;">
+              <strong>Location:</strong> Block 3, Department of CCE, CGC University Campus
+            </li>
+            <li style="font-size: 15px;">
+              <strong>Lab Facilities:</strong> CCE Computer Labs 1-4 & AI Innovation Center
+            </li>
+            <li style="font-size: 15px;">
+              <strong>Official Contact:</strong> techpulse.cce@cgc.edu.in
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT & FAQ -->
+  <section class="section" id="contact">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Inquiries & Feedback</span>
+          <h2 style="margin-top: 12px;">Contact Us</h2>
+        </div>
+        <p class="section-intro-text">
+          Have a question for the Techpulse executive board or CCE department coordinators? Send us a message below.
+        </p>
+      </div>
+
+      <div class="contact-layout">
+        <div class="contact-card reveal-left">
+          <h3 style="margin-bottom: 24px;">Send a Message</h3>
+          <form id="contactForm">
+            <div class="form-field">
+              <label class="field-label">Full Name</label>
+              <input type="text" class="field-input" placeholder="Your Name" required />
+            </div>
+            <div class="form-field">
+              <label class="field-label">Email Address</label>
+              <input type="email" class="field-input" placeholder="student@cgc.edu.in" required />
+            </div>
+            <div class="form-field">
+              <label class="field-label">Subject</label>
+              <select class="field-select" required>
+                <option value="Event Inquiry">Upcoming Event Inquiry</option>
+                <option value="Membership">Club Membership Question</option>
+                <option value="Sponsorship">Sponsorship / Collaboration</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="field-label">Message</label>
+              <textarea class="field-textarea" rows="4" placeholder="Type your message..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-red" style="width: 100%;">
+              Send Message
+            </button>
+          </form>
+        </div>
+
+        <div class="reveal-right">
+          <h3 style="margin-bottom: 24px;">Frequently Asked Questions</h3>
+          <div class="faq-stack">
+            <div class="faq-box active">
+              <div class="faq-question">
+                <span>Who can join Techpulse club?</span>
+                <span>▼</span>
+              </div>
+              <div class="faq-answer">
+                Techpulse is open to all students across CGC University, hosted under the supervision of the CCE (Chandigarh College of Engineering).
+              </div>
+            </div>
+
+            <div class="faq-box">
+              <div class="faq-question">
+                <span>Are certificates provided for organized events?</span>
+                <span>▼</span>
+              </div>
+              <div class="faq-answer">
+                Yes, verified participants receive official certificates co-signed by the CCE Department at CGC University.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- FLOATING QUICK ACTION BUTTON -->
+  <button class="fab-btn" id="fabBtn" title="Quick Info">&rarr;</button>
+
+  <div class="quick-drawer" id="quickDrawer">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+      <span class="eyebrow">Quick Overview</span>
+      <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-red);">CGC CCE</span>
+    </div>
+    <h4 style="margin-bottom: 6px;">Techpulse Studio Portal</h4>
+    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+      5 events organized, 1000+ attendees, under the CCE Department.
+    </p>
+    <button class="btn btn-red btn-sm" style="width: 100%;" onclick="openJoinModal()">
+      Join Club &rarr;
+    </button>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>
+          <img src="logo.png" alt="" class="footer-logo" />
+          <strong>Techpulse Studio</strong> • Department of CCE, CGC University.
+        </div>
+        <div>
+          <a href="#hero" style="color: var(--text-primary); text-decoration: none;">&uarr; Back to Top</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL BACKDROP -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
