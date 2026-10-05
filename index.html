@@ -39,9 +39,9 @@
 
       <ul class="nav-links">
         <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#team" class="nav-link">Leadership</a></li>
         <li><a href="#events" class="nav-link">Events</a></li>
         <li><a href="#upcoming" class="nav-link">Upcoming</a></li>
-        <li><a href="#team" class="nav-link">Leadership</a></li>
         <li><a href="#department" class="nav-link">CCE Dept</a></li>
         <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
@@ -104,7 +104,6 @@
 
       <!-- Dark "inside the robot" overlay -->
       <div class="enter-overlay" id="enterOverlay">
-        <canvas id="pulseCanvas" class="pulse-canvas"></canvas>
         <div class="enter-label" id="enterLabel">
           <img src="logo.png" alt="Techpulse logo" class="enter-logo" />
           <span class="enter-eyebrow">Inside the robot</span>
@@ -194,6 +193,43 @@
     </div>
   </section>
 
+  <!-- LEADERSHIP & PULSE MEMBERS -->
+  <section class="section team-section" id="team">
+    <div class="team-canvas-wrap" aria-hidden="true"><canvas id="teamCanvas" class="team-canvas"></canvas></div>
+
+    <div class="container">
+      <div class="team-head">
+        <span class="eyebrow">Executive Roster</span>
+        <h2 class="team-title split" data-split>Meet our <em>Leadership</em></h2>
+      </div>
+
+      <p class="lead-kicker t-rise">Meet our <b>Academic Coordinator</b></p>
+      <div id="coordMount"></div>
+
+      <p class="lead-kicker sub t-rise">Student Leadership Team</p>
+      <div class="core-grid" id="coreMount"></div>
+
+      <div class="pulse-head t-rise">
+        <div>
+          <span class="eyebrow">The Engine Room</span>
+          <h3 class="pulse-title">Meet our <em>Pulse Members</em></h3>
+          <p class="pulse-sub">Six departments, one heartbeat. Tap a node on the pulse line to meet each team and its head, or switch to see everyone at once. Click any card for a closer look.</p>
+        </div>
+        <div class="view-toggle" id="viewToggle">
+          <span class="view-thumb"></span>
+          <button class="active" data-view="dept">By department</button>
+          <button data-view="all">All members</button>
+        </div>
+      </div>
+
+      <div id="deptView">
+        <div class="net-wrap t-rise"><div class="net-nodes" id="netNodes"></div></div>
+        <div id="deptPanel"></div>
+      </div>
+      <div class="all-view" id="allView" hidden></div>
+    </div>
+  </section>
+
   <div class="line-divider"></div>
 
   <!-- PAST 5 EVENTS -->
@@ -238,25 +274,6 @@
       </div>
 
       <div id="upcomingContainer"></div>
-    </div>
-  </section>
-
-  <div class="line-divider"></div>
-
-  <!-- EXECUTIVE TEAM -->
-  <section class="section" id="team">
-    <div class="container">
-      <div class="section-head reveal">
-        <div>
-          <span class="eyebrow">Executive Roster</span>
-          <h2 style="margin-top: 12px;">Meet Our Leadership Team</h2>
-        </div>
-        <p class="section-intro-text">
-          Dedicated student leaders from the CCE Department driving Techpulse forward.
-        </p>
-      </div>
-
-      <div class="team-editorial-grid" id="membersGrid"></div>
     </div>
   </section>
 
@@ -415,6 +432,8 @@
 
   <div id="toast-container"></div>
 
+  <script src="team-data.js"></script>
   <script src="app.js"></script>
+  <script src="team.js"></script>
 </body>
 </html>

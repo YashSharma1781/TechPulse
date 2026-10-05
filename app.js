@@ -147,7 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initPreloader();
   initNavbar();
   initJourney();
-  initPulseBackground();
   initAbout();
   initTechpulseRobot();
   initFilterTabs();
@@ -606,98 +605,6 @@ function initJourney() {
     document.documentElement.classList.toggle('inside', ov > 0.5 || stageLeaving);
   }
   tick();
-}
-
-// ----------------------------------------------------
-// "INSIDE THE ROBOT" BACKGROUND: heartbeat traces + pulse rings (low opacity)
-// ----------------------------------------------------
-function initPulseBackground() {
-  const canvas = document.getElementById('pulseCanvas');
-  const overlay = document.getElementById('enterOverlay');
-  if (!canvas || !overlay) return;
-  const logo = overlay.querySelector('.enter-logo');
-  const ctx = canvas.getContext('2d');
-  let W = 0, H = 0;
-
-  function resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = overlay.clientWidth;
-    H = overlay.clientHeight;
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-  resize();
-  window.addEventListener('resize', resize);
-  if (window.ResizeObserver) new ResizeObserver(resize).observe(overlay);
-
-  // One heartbeat (P, Q, R, S, T waves) as [phase, height]
-  const BEAT = [[0, 0], [0.12, 0], [0.16, 6], [0.2, 0], [0.3, 0], [0.33, -8], [0.37, 70], [0.42, -26], [0.46, 0], [0.58, 0], [0.64, 14], [0.7, 0], [1, 0]];
-  function ecg(u) {
-    for (let i = 1; i < BEAT.length; i++) {
-      if (u <= BEAT[i][0]) {
-        const [u0, y0] = BEAT[i - 1], [u1, y1] = BEAT[i];
-        return y0 + (y1 - y0) * ((u - u0) / (u1 - u0));
-      }
-    }
-    return 0;
-  }
-
-  const PERIOD = 380;
-  const ROWS = [[0.16, 0.2, 1.0, 70], [0.5, 0.07, 0.8, 52], [0.84, 0.2, 1.0, 88]]; // y, alpha, amplitude, speed
-  const start = performance.now();
-
-  function frame(now) {
-    requestAnimationFrame(frame);
-    if (parseFloat(overlay.style.opacity || '0') < 0.03) return;
-    const rect = overlay.getBoundingClientRect();
-    if (rect.bottom < 0 || rect.top > window.innerHeight) return;
-
-    const t = (now - start) / 1000;
-    ctx.clearRect(0, 0, W, H);
-
-    // Pulse rings expanding from the logo
-    let cx = W / 2, cy = H / 2;
-    if (logo) {
-      const r = logo.getBoundingClientRect();
-      cx = r.left + r.width / 2 - rect.left;
-      cy = r.top + r.height / 2 - rect.top;
-    }
-    const R = Math.max(W, H) * 0.6;
-    for (let k = 0; k < 3; k++) {
-      const prog = ((t / 4.2) + k / 3) % 1;
-      const a = 0.2 * Math.pow(1 - prog, 1.6);
-      ctx.strokeStyle = k % 2 ? `rgba(152, 144, 200, ${a})` : `rgba(108, 196, 127, ${a})`;
-      ctx.lineWidth = 1 + (1 - prog) * 1.8;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 60 + prog * R, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    // Scrolling heartbeat traces
-    ROWS.forEach(([yf, alpha, amp, speed]) => {
-      const y = H * yf;
-      const scale = (H / 850) * amp;
-      const off = (t * speed) % PERIOD;
-      const g = ctx.createLinearGradient(0, 0, W, 0);
-      g.addColorStop(0, 'rgba(108, 196, 127, 0)');
-      g.addColorStop(0.25, `rgba(108, 196, 127, ${alpha})`);
-      g.addColorStop(0.75, `rgba(152, 144, 200, ${alpha})`);
-      g.addColorStop(1, 'rgba(152, 144, 200, 0)');
-      ctx.strokeStyle = g;
-      ctx.lineWidth = 2;
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      for (let x = 0; x <= W; x += 3) {
-        const u = (((x + off) % PERIOD) + PERIOD) % PERIOD / PERIOD;
-        const yy = y - ecg(u) * scale;
-        if (x === 0) ctx.moveTo(x, yy);
-        else ctx.lineTo(x, yy);
-      }
-      ctx.stroke();
-    });
-  }
-  requestAnimationFrame(frame);
 }
 
 // ----------------------------------------------------
