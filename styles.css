@@ -2648,3 +2648,238 @@ h3, .h3 {
   .sx-iris { transform: scale(1); }
   .sx-ecg { display: none; }
 }
+
+
+/* ======================================================
+   RESPONSIVE LAYER  -  phones, tablets, laptops, big screens
+   (kept at the end of the file so it wins over earlier rules)
+   ====================================================== */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+img, svg, canvas, video { max-width: 100%; }
+h1, h2, h3, h4 { overflow-wrap: break-word; }
+body { overscroll-behavior-y: none; }
+
+/* stable stage height on phones (the browser toolbar sliding won't resize the robot) */
+.journey-stage { height: 100vh; height: 100svh; }
+.sx-stick { height: 100vh; height: 100svh; }
+
+/* ---------- notches / home indicator ---------- */
+.navbar { padding-top: max(24px, env(safe-area-inset-top)); }
+.navbar.scrolled { padding-top: max(16px, env(safe-area-inset-top)); }
+.fab-btn { bottom: max(28px, calc(env(safe-area-inset-bottom) + 12px)); }
+.footer { padding-bottom: max(30px, calc(env(safe-area-inset-bottom) + 16px)); }
+
+/* ---------- mobile menu ---------- */
+.nav-toggle {
+  display: none;
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  cursor: pointer;
+}
+.nav-toggle span {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--text-primary);
+  transition: transform 0.35s var(--ease-soft), opacity 0.2s ease, top 0.35s var(--ease-soft);
+}
+.nav-toggle span:nth-child(1) { top: 15px; }
+.nav-toggle span:nth-child(2) { top: 21px; }
+.nav-toggle span:nth-child(3) { top: 27px; }
+.nav-toggle.open span:nth-child(1) { top: 21px; transform: rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { top: 21px; transform: rotate(-45deg); }
+
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  padding: calc(104px + env(safe-area-inset-top)) 6vw calc(36px + env(safe-area-inset-bottom));
+  background: var(--bg-primary);
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-14px);
+  transition: opacity 0.35s ease, transform 0.45s var(--ease-soft), visibility 0.35s;
+}
+.mobile-menu.open { opacity: 1; visibility: visible; transform: none; }
+.mm-link {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  font-family: 'Bricolage Grotesque', var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(28px, 8vw, 46px);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+.mm-link i { font-family: var(--font-mono); font-style: normal; font-size: 12px; letter-spacing: 0.12em; color: var(--accent-red); }
+.mm-join { margin-top: 26px; width: 100%; justify-content: center; }
+html.menu-open { overflow: hidden; }
+
+/* ---------- touch devices ---------- */
+@media (pointer: coarse) {
+  .btn { min-height: 44px; }
+  .btn-sm { min-height: 40px; }
+  .chip, .tab-btn, .net-node, .view-toggle button { min-height: 40px; }
+}
+@media (hover: none) {
+  * { -webkit-tap-highlight-color: transparent; }
+  .btn:hover { transform: none; }
+}
+
+/* ---------- big screens ---------- */
+@media (min-width: 1700px) {
+  .container { max-width: 1500px; }
+  .hero-copy { max-width: 700px; }
+}
+@media (min-width: 2300px) {
+  .container { max-width: 1800px; }
+  .hero-copy { max-width: 820px; }
+}
+
+/* ---------- laptops / small desktops ---------- */
+@media (max-width: 1180px) {
+  .nav-links { gap: 22px; }
+  .nav-link { font-size: 15px; }
+  .hero-copy { max-width: min(600px, 54vw); }
+  .hero-copy .hero-brand-title { font-size: clamp(46px, min(8.6vw, 15vh), 130px); }
+}
+
+/* ---------- tablets and below: hamburger menu ---------- */
+@media (max-width: 960px) {
+  .nav-links { display: none; }
+  .nav-toggle { display: block; }
+  .nav-actions { gap: 10px; }
+  .section-head { margin-bottom: 40px; }
+}
+
+/* ---------- portrait screens (phones, tablets held upright) ---------- */
+@media (max-aspect-ratio: 115/100) {
+  .hero-overlay { align-items: flex-start; padding: calc(84px + env(safe-area-inset-top)) 0 0; }
+  .hero-copy { max-width: 100%; padding-top: 0; }
+  .hero-copy .hero-brand-title { font-size: clamp(46px, 14vw, 104px); margin-top: 8px; }
+  .hero-tagline { font-size: clamp(19px, 5.2vw, 34px); margin-bottom: 12px; }
+  .hero-copy .hero-subtitle { font-size: clamp(14px, 3.6vw, 18px); line-height: 1.5; margin-bottom: 18px; max-width: 640px; }
+  .hero-copy .hero-actions { margin-bottom: 0; gap: 10px; }
+  .hero-copy .hero-actions .btn { padding: 12px 20px; font-size: 14px; }
+  .scroll-hint { bottom: max(16px, env(safe-area-inset-bottom)); }
+}
+/* stats only where there is room */
+@media (max-aspect-ratio: 115/100) and (min-height: 780px) {
+  .hero-copy .hero-stats-row { display: grid; margin-top: 22px; gap: 10px; }
+  .hero-copy .stat-val { font-size: clamp(24px, 6vw, 36px); }
+  .hero-copy .stat-lbl { font-size: 10.5px; letter-spacing: 0.04em; }
+}
+@media (max-aspect-ratio: 115/100) and (max-height: 640px) {
+  .hero-copy .hero-subtitle { display: none; }
+}
+
+/* ---------- landscape phones (short and wide) ---------- */
+@media (min-aspect-ratio: 115/100) and (max-height: 560px) {
+  .hero-overlay { padding: 70px 0 28px; }
+  .hero-copy .hero-subtitle, .hero-copy .hero-stats-row, .hero-copy .eyebrow { display: none; }
+  .hero-copy .hero-brand-title { font-size: clamp(38px, 15vh, 84px); }
+  .hero-tagline { font-size: clamp(15px, 4.8vh, 26px); margin-bottom: 14px; }
+  .hero-copy .hero-actions { margin: 0; }
+  .scroll-hint { display: none; }
+  .navbar { padding-block: 10px; }
+  .enter-logo { height: 70px; }
+}
+
+/* ---------- phones & small tablets ---------- */
+@media (max-width: 768px) {
+  .container { width: 90%; }
+  .section { padding-block: clamp(56px, 12vw, 90px); }
+
+  /* undo the older phone rules that pushed the hero copy too low */
+  .hero-copy { padding-top: 0; }
+
+  .marquee-ticker { font-size: 11px; padding: 11px 0; }
+
+  /* inside-the-robot screen */
+  .enter-title { font-size: clamp(32px, 11vw, 56px); }
+
+  /* section transitions */
+  .sx-ecg { height: 150px; }
+  .sx-title { font-size: clamp(40px, 15vw, 96px); }
+
+  /* about */
+  .about-head { margin-bottom: 40px; }
+  .about-bigtext { font-size: clamp(90px, 28vw, 180px); }
+  .mission-card { padding: 26px; border-radius: 22px; }
+  .pillar-card { padding: 20px; }
+
+  /* upcoming + department + contact */
+  .upcoming-editorial-card h2, #department h2 { font-size: clamp(24px, 7vw, 34px) !important; }
+  .upcoming-editorial-card { padding: 24px; }
+  .countdown-flex { gap: 8px; }
+  .countdown-box { padding: 12px 4px; }
+  .countdown-num { font-size: clamp(22px, 7vw, 30px); }
+  .about-editorial-box { padding: 26px; }
+  .contact-card { padding: 24px; }
+  .faq-question { font-size: 16px; padding: 16px; }
+
+  /* footer */
+  .footer { margin-top: 40px; padding-top: 40px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
+
+  /* modal */
+  .modal-backdrop { padding: 12px; align-items: flex-end; }
+  .modal-card { padding: 24px 20px; border-radius: 20px; max-height: 92vh; max-height: 92dvh; }
+  .modal-card img { height: 200px !important; }
+
+  /* floating button + pop-up */
+  .fab-btn { right: 16px; width: 42px; height: 42px; }
+  .quick-drawer { right: 16px; width: min(290px, calc(100vw - 32px)); bottom: calc(max(28px, env(safe-area-inset-bottom) + 12px) + 54px); }
+  #toast-container { bottom: calc(80px + env(safe-area-inset-bottom)); width: calc(100vw - 32px); }
+  .toast-msg { text-align: center; }
+
+  /* leadership */
+  .pulse-head { margin-top: 64px; }
+  .view-toggle { width: 100%; }
+  .view-toggle button { flex: 1; padding-inline: 10px; }
+  .dept-panel { padding: 22px 18px; border-radius: 24px; }
+  .coord-card { padding: 24px 20px; }
+  .p-photo { width: min(200px, 56vw); }
+
+  /* events */
+  .ev-title { font-size: clamp(40px, 13vw, 84px); }
+  .ev-row { margin-inline: -8px; padding: 22px 8px; }
+}
+
+/* ---------- small phones ---------- */
+@media (max-width: 480px) {
+  .nav-actions .btn { padding: 8px 14px; }
+  .brand-wordmark { font-size: 19px; }
+  .brand-logo { height: 26px; }
+  .countdown-lbl { font-size: 9px; }
+  .ev-row { grid-template-columns: 26px 1fr 64px; gap: 6px 12px; }
+  .ev-thumb { width: 64px; height: 64px; }
+  .dept-name { font-size: 14px; }
+  .about-title { font-size: clamp(34px, 11.5vw, 56px); }
+  .lead-title, .team-title { font-size: clamp(34px, 11.5vw, 56px); }
+  .hero-copy .hero-actions .btn { flex: 1 1 auto; justify-content: center; }
+}
+@media (max-width: 380px) {
+  .nav-actions .btn { display: none; }   /* "Join Club" lives in the menu on tiny screens */
+}
+
+/* ---------- very short windows (any width) ---------- */
+@media (max-height: 460px) {
+  .mobile-menu { padding-top: 86px; }
+  .mm-link { padding: 10px 0; font-size: 26px; }
+}

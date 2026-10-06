@@ -147,6 +147,18 @@ document.addEventListener('DOMContentLoaded', () => {
   initPreloader();
   initNavbar();
   initJourney();
+  initMobileMenu();
+  measureHeroLayout();
+  let lastW = window.innerWidth, lastH = window.innerHeight;
+  window.addEventListener('resize', () => {
+    const w = window.innerWidth, h = window.innerHeight;
+    if (Math.abs(w - lastW) < 2 && Math.abs(h - lastH) < 150) return;
+    lastW = w; lastH = h;
+    measureHeroLayout();
+  });
+  window.addEventListener('orientationchange', () => setTimeout(measureHeroLayout, 250));
+  window.addEventListener('load', measureHeroLayout);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureHeroLayout);
   initAbout();
   initEventRows();
   initSectionTransitions();
@@ -363,6 +375,32 @@ function makeGlowTexture(stops) {
   return new THREE.CanvasTexture(c);
 }
 
+// Portrait phones / tablets: measure the hero text and put the robot in the space below it
+const HERO_LAYOUT = { y: -1.2, zFit: 0 };
+
+function measureHeroLayout() {
+  const copy = document.getElementById('heroCopy');
+  const canvas = document.getElementById('robotViewport');
+  if (!copy || !canvas) return;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  if (vw / vh >= 1.15) { HERO_LAYOUT.y = 0; HERO_LAYOUT.zFit = 0; return; }
+
+  const FOV = 38, tanHalf = Math.tan((FOV * Math.PI / 180) / 2);
+  const stage = canvas.getBoundingClientRect();
+  const copyBottom = copy.getBoundingClientRect().bottom - stage.top;
+  const top = Math.min(copyBottom + 14, vh * 0.62);           // keep the robot at least ~38% of the screen
+  const bottom = vh - 54;                                      // room for the scroll hint
+  const availH = Math.max(bottom - top, vh * 0.3);
+
+  // camera distance so the robot (~4.3 world units tall) fits the free band
+  HERO_LAYOUT.zFit = 4.3 / (2 * tanHalf * (availH / vh));
+  // shift the robot so its centre sits in the middle of that band
+  const z = Math.max(8.2, HERO_LAYOUT.zFit);
+  const unitsPerPx = (2 * z * tanHalf) / vh;
+  const bandCentre = top + availH / 2;
+  HERO_LAYOUT.y = -((bandCentre - vh / 2) * unitsPerPx) + 0.05;
+}
+
 function initTechpulseRobot() {
   const container = document.getElementById('robotViewport');
   if (!container || typeof THREE === 'undefined') return;
@@ -476,7 +514,7 @@ function initTechpulseRobot() {
   robotRig.add(core);
 
   // 6. Cursor tracking (head + eyes follow the mouse, anywhere on the page)
-  window.addEventListener('mousemove', (e) => {
+  window.addEventListener('pointermove', (e) => {
     mouseNX = (e.clientX / window.innerWidth) * 2 - 1;
     mouseNY = (e.clientY / window.innerHeight) * 2 - 1;
     targetHeadRotY = mouseNX * 0.75;
@@ -519,10 +557,10 @@ function initTechpulseRobot() {
     const tanHalf = Math.tan((FOV * Math.PI / 180) / 2);
     const fit = (width) => width / (2 * tanHalf * aspect);
     const wide = aspect >= 1.15;
-    const zStart = wide ? 8.2 : Math.max(8.2, fit(4.6));
+    const zStart = wide ? Math.max(8.2, fit(7.2)) : Math.max(8.2, fit(4.6), HERO_LAYOUT.zFit);
     const zClose = wide ? 4.2 : Math.max(4.2, fit(3.7) + 0.6);
-    const heroX = wide ? 0.24 * (2 * 8.2 * tanHalf * aspect) : 0;
-    const heroY = wide ? 0 : -1.2;
+    const heroX = wide ? 0.24 * (2 * zStart * tanHalf * aspect) : 0;
+    const heroY = wide ? 0 : HERO_LAYOUT.y;
 
     robotRig.position.set(heroX * (1 - e1), heroY * (1 - e1), 0);
     camPos.set(0, 1.3, zStart).lerp(P1.set(0, 1.3, zClose), e1).lerp(P2, e2);
@@ -954,6 +992,41 @@ function updateCountdown() {
 function initCountdown() {
   updateCountdown();
   setInterval(updateCountdown, 1000);
+}
+
+// ----------------------------------------------------
+// MOBILE MENU
+// ----------------------------------------------------
+function closeMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn = document.getElementById('navToggle');
+  if (!menu || !btn) return;
+  menu.classList.remove('open');
+  btn.classList.remove('open');
+  btn.setAttribute('aria-expanded', 'false');
+  btn.setAttribute('aria-label', 'Open menu');
+  menu.setAttribute('aria-hidden', 'true');
+  document.documentElement.classList.remove('menu-open');
+}
+
+function initMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn = document.getElementById('navToggle');
+  if (!menu || !btn) return;
+
+  btn.addEventListener('click', () => {
+    const open = !menu.classList.contains('open');
+    menu.classList.toggle('open', open);
+    btn.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    menu.setAttribute('aria-hidden', String(!open));
+    document.documentElement.classList.toggle('menu-open', open);
+  });
+
+  menu.querySelectorAll('.mm-link').forEach(a => a.addEventListener('click', closeMobileMenu));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMobileMenu(); });
+  window.addEventListener('resize', () => { if (window.innerWidth > 960) closeMobileMenu(); });
 }
 
 // Navbar scroll state

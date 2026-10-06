@@ -2,8 +2,8 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Techpulse</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Techpulse | Interactive AI Robot Portal • CCE Dept, CGC University</title>
   <meta name="description" content="Techpulse is the official student engineering portal of Chandigarh College of Engineering (CCE) at CGC University featuring an interactive floating 3D AI robot." />
 
   <link rel="icon" type="image/png" href="favicon.png" />
@@ -50,9 +50,23 @@
         <button class="btn btn-red btn-sm" onclick="openJoinModal()">
           Join Club
         </button>
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
   </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <a href="#about" class="mm-link"><i>01</i>About</a>
+    <a href="#team" class="mm-link"><i>02</i>Leadership</a>
+    <a href="#events" class="mm-link"><i>03</i>Events</a>
+    <a href="#upcoming" class="mm-link"><i>04</i>Upcoming</a>
+    <a href="#department" class="mm-link"><i>05</i>CCE Dept</a>
+    <a href="#contact" class="mm-link"><i>06</i>Contact</a>
+    <button class="btn btn-red mm-join" onclick="closeMobileMenu(); openJoinModal()">Join Club &rarr;</button>
+  </div>
 
   <!-- SCROLL JOURNEY: hero -> close-up -> inside the robot -->
   <div id="journey">
