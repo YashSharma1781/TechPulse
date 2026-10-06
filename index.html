@@ -261,20 +261,15 @@
         <div>
           <span class="eyebrow">The Engine Room</span>
           <h3 class="pulse-title">Meet our <em>Pulse Members</em></h3>
-          <p class="pulse-sub">Six departments, one heartbeat. Tap a node on the pulse line to meet each team and its head, or switch to see everyone at once. Click any card for a closer look.</p>
-        </div>
-        <div class="view-toggle" id="viewToggle">
-          <span class="view-thumb"></span>
-          <button class="active" data-view="dept">By department</button>
-          <button data-view="all">All members</button>
+          <p class="pulse-sub">Six departments, one heartbeat. Everyone is right here: scroll through each team and its head, or jump to a department with the pulse line. Tap a card for a closer look.</p>
         </div>
       </div>
 
-      <div id="deptView">
-        <div class="net-wrap t-rise"><div class="net-nodes" id="netNodes"></div></div>
-        <div id="deptPanel"></div>
+      <div class="net-wrap t-rise">
+        <div class="net-nodes" id="netNodes"></div>
+        <span class="net-current" id="netCurrent" aria-live="polite"></span>
       </div>
-      <div class="all-view" id="allView" hidden></div>
+      <div id="deptList"></div>
     </div>
   </section>
 

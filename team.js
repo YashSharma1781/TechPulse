@@ -71,99 +71,78 @@
       </article>`).join('');
   }
 
-  // ---------- Pulse members ----------
-  function mCard(p, d, key, k, role, compact) {
-    return `<button class="m-card${compact ? ' compact' : ''}" style="--c:${d.color};--k:${k}" data-open="${key}">
-      <span class="m-ring">${avatar(p, d)}</span>
-      <span class="m-text"><span class="m-name">${esc(p.name)}</span><span class="m-role">${esc(role)}</span></span>
+  // ---------- Pulse members: every department, every face, no clicking needed ----------
+  const netEl = $('#netNodes');
+  let fillEl, pulseEl;
+
+  function pmCard(p, d, key, k, isHead) {
+    return `<button class="pm-card t-rise${isHead ? ' head' : ''}" style="--c:${d.color};--d:${(Math.min(k, 6) * 0.06).toFixed(2)}s" data-open="${key}" aria-label="${esc(p.name)}, ${isHead ? 'department head' : 'member'}">
+      <span class="pm-photo">${avatar(p, d)}${isHead ? '<span class="pm-badge">&#9733; Head</span>' : ''}</span>
+      <span class="pm-info"><span class="pm-name">${esc(p.name)}</span><span class="pm-role">${isHead ? 'Department Head' : 'Member'}</span></span>
     </button>`;
   }
 
-  const netEl = $('#netNodes'), panelEl = $('#deptPanel'), allEl = $('#allView');
-  let fillEl, pulseEl, active = 0;
+  function renderDepartments() {
+    $('#deptList').innerHTML = DEPTS.map((d) => `
+      <section class="dept-block" id="dept-${d.id}" data-i="${d.idx}" style="--c:${d.color}">
+        <header class="dept-top t-rise">
+          <span class="dept-no">${pad(d.idx + 1)}</span>
+          <div>
+            <h4 class="dept-title">${esc(d.name)}</h4>
+            <p class="dept-line">${esc(d.tagline || '')}</p>
+          </div>
+          <span class="dept-people">${pad(d.members.length + 1)} people</span>
+        </header>
+        <div class="pm-grid">
+          ${pmCard(d.head, d, `head:${d.idx}`, 0, true)}
+          ${d.members.map((m, k) => pmCard(m, d, `mem:${d.idx}:${k}`, k + 1, false)).join('')}
+        </div>
+      </section>`).join('');
+  }
 
+  // The pulse line doubles as a sticky "jump to" bar and follows the department you are reading
   function renderNetwork() {
     netEl.style.setProperty('--n', DEPTS.length);
     netEl.style.gridTemplateColumns = `repeat(${DEPTS.length}, 1fr)`;
     netEl.innerHTML = '<span class="net-fill"></span><span class="net-pulse"></span>' + DEPTS.map((d) => `
-      <button class="net-node" data-i="${d.idx}" style="--c:${d.color}" aria-label="${esc(d.name)}">
+      <button class="net-node" data-i="${d.idx}" style="--c:${d.color}" aria-label="Jump to ${esc(d.name)}">
         <span class="node-dot">${esc(d.icon)}</span>
         <span class="node-label">${esc(d.short || d.name)}</span>
-        <span class="node-count">${pad(d.members.length + 1)} people</span>
       </button>`).join('');
     fillEl = $('.net-fill', netEl);
     pulseEl = $('.net-pulse', netEl);
+
     netEl.addEventListener('click', (e) => {
       const b = e.target.closest('.net-node');
-      if (b) setActive(+b.dataset.i, true);
+      if (!b) return;
+      const block = document.getElementById('dept-' + DEPTS[+b.dataset.i].id);
+      if (block) block.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 
-  function renderPanel(d) {
-    panelEl.innerHTML = `
-      <div class="dept-panel" style="--c:${d.color}">
-        <aside class="dept-intro">
-          <span class="dept-num">${pad(d.idx + 1)}</span>
-          <h4 class="dept-name">${esc(d.name)}</h4>
-          <p class="dept-tag">${esc(d.tagline || '')}</p>
-          <div class="dept-stats"><span><b>${pad(d.members.length)}</b>members</span><span><b>01</b>head</span></div>
-          <button class="head-card" data-open="head:${d.idx}">
-            ${avatar(d.head, d)}
-            <span class="head-meta"><span class="head-badge">&#9733; Department Head</span><span class="head-name">${esc(d.head.name)}</span></span>
-          </button>
-        </aside>
-        <div class="member-grid">
-          ${d.members.map((m, k) => mCard(m, d, `mem:${d.idx}:${k}`, k, 'Member')).join('')}
-        </div>
-      </div>`;
-  }
-
-  function setActive(i, fromClick) {
-    active = i;
+  function setActive(i) {
     const d = DEPTS[i], n = DEPTS.length;
-    netEl.querySelectorAll('.net-node').forEach((b, k) => b.classList.toggle('active', k === i));
+    const nodes = [...netEl.querySelectorAll('.net-node')];
+    nodes.forEach((b, k) => b.classList.toggle('active', k === i));
     fillEl.style.width = `calc(100% * ${i} / ${n})`;
     fillEl.style.background = `linear-gradient(90deg, #6CC47F, ${d.color})`;
     pulseEl.style.left = `calc(100% * ${i + 0.5} / ${n})`;
     pulseEl.style.setProperty('--pc', d.color);
-    renderPanel(d);
-    if (fromClick) netEl.querySelectorAll('.net-node')[i].scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+    const cur = $('#netCurrent');
+    if (cur) { cur.textContent = d.name; cur.style.color = d.color; }
+    const wrap = netEl.parentElement;
+    if (wrap.scrollWidth > wrap.clientWidth + 2) {
+      const nd = nodes[i];
+      wrap.scrollTo({ left: nd.offsetLeft - wrap.clientWidth / 2 + nd.offsetWidth / 2, behavior: 'smooth' });
+    }
   }
 
-  function renderAll() {
-    allEl.innerHTML = DEPTS.map((d) => `
-      <div class="all-dept" style="--c:${d.color}">
-        <div class="all-head">
-          <span class="dept-num sm">${pad(d.idx + 1)}</span>
-          <h4 class="all-name">${esc(d.name)}</h4>
-          <span class="all-line"></span>
-          <span class="all-count">${pad(d.members.length + 1)} people</span>
-        </div>
-        <div class="all-grid">
-          ${mCard(d.head, d, `head:${d.idx}`, 0, '★ Department Head', true)}
-          ${d.members.map((m, k) => mCard(m, d, `mem:${d.idx}:${k}`, k + 1, 'Member', true)).join('')}
-        </div>
-      </div>`).join('');
-  }
-
-  // ---------- View toggle ----------
-  function initToggle() {
-    const tog = $('#viewToggle'), thumb = $('.view-thumb', tog);
-    const btns = [...tog.querySelectorAll('button')];
-    function place(b) {
-      thumb.style.width = b.offsetWidth + 'px';
-      thumb.style.transform = `translateX(${b.offsetLeft - 5}px)`;
-    }
-    function set(view) {
-      btns.forEach((b) => b.classList.toggle('active', b.dataset.view === view));
-      $('#deptView').hidden = view !== 'dept';
-      allEl.hidden = view !== 'all';
-      place(btns.find((b) => b.dataset.view === view));
-    }
-    btns.forEach((b) => b.addEventListener('click', () => set(b.dataset.view)));
-    window.addEventListener('resize', () => place(btns.find((b) => b.classList.contains('active'))));
-    requestAnimationFrame(() => place(btns[0]));
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => place(btns.find((b) => b.classList.contains('active'))));
+  function initSpy() {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => { if (en.isIntersecting) setActive(+en.target.dataset.i); });
+    }, { rootMargin: '-35% 0px -55% 0px' });
+    document.querySelectorAll('.dept-block').forEach((b) => io.observe(b));
+    setActive(0);
   }
 
   // ---------- Person modal ----------
@@ -201,7 +180,7 @@
       if (el) openPerson(el.dataset.open);
     });
 
-    const SEL = '.core-card, .coord-card, .m-card, .head-card';
+    const SEL = '.core-card, .coord-card';
     section.addEventListener('pointermove', (e) => {
       const card = e.target.closest(SEL);
       if (!card) return;
@@ -209,8 +188,8 @@
       const px = e.clientX - r.left, py = e.clientY - r.top;
       card.style.setProperty('--mx', px + 'px');
       card.style.setProperty('--my', py + 'px');
-      if (card.matches('.core-card, .m-card')) {
-        const t = card.matches('.core-card') ? 9 : 6;
+      if (card.matches('.core-card')) {
+        const t = 9;
         card.style.setProperty('--ry', ((px / r.width - 0.5) * t).toFixed(2) + 'deg');
         card.style.setProperty('--rx', (-(py / r.height - 0.5) * t).toFixed(2) + 'deg');
         card.style.setProperty('--gx', px + 'px');
@@ -292,11 +271,10 @@
     if (!section) return;
     renderLeadership();
     renderNetwork();
-    setActive(0, false);
-    renderAll();
-    initToggle();
+    renderDepartments();
     initInteractions(section);
     initReveal();
+    initSpy();
     initConstellation(section);
   }
 
