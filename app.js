@@ -128,13 +128,26 @@ const INITIAL_DATA = {
   ]
 };
 
+// Events live in events-data.js (shared with the event pages) - never use a stale browser copy
+function eventsFromDataFile(fallback) {
+  if (typeof EVENTS === 'undefined') return fallback;
+  return EVENTS.map(e => ({
+    ...e,
+    agenda: Array.isArray(e.agenda) ? e.agenda.map(a => `${a.when}: ${a.what}`).join('\n') : (e.agenda || '')
+  }));
+}
+
 function loadSavedData() {
+  let data;
   try {
     const raw = localStorage.getItem('techpulse_data');
-    return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(INITIAL_DATA));
+    data = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(INITIAL_DATA));
   } catch (err) {
-    return JSON.parse(JSON.stringify(INITIAL_DATA));
+    data = JSON.parse(JSON.stringify(INITIAL_DATA));
   }
+  data.events = eventsFromDataFile(data.events);
+  if (typeof UPCOMING !== 'undefined') data.upcoming = { ...UPCOMING, date: UPCOMING.start };
+  return data;
 }
 
 let AppState = {
@@ -144,36 +157,42 @@ let AppState = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  initPreloader();
-  initNavbar();
-  initJourney();
-  initMobileMenu();
-  measureHeroLayout();
+  // Each step runs on its own: if one fails, the rest of the page still works.
+  const run = (fn) => {
+    try { fn(); } catch (err) { console.error('[Techpulse] ' + (fn.name || 'init') + ' failed:', err); }
+  };
+
+  run(initPreloader);
+  run(initNavbar);
+  run(initJourney);
+  run(initMobileMenu);
+  run(measureHeroLayout);
+
   let lastW = window.innerWidth, lastH = window.innerHeight;
   window.addEventListener('resize', () => {
     const w = window.innerWidth, h = window.innerHeight;
     if (Math.abs(w - lastW) < 2 && Math.abs(h - lastH) < 150) return;
     lastW = w; lastH = h;
-    measureHeroLayout();
+    run(measureHeroLayout);
   });
-  window.addEventListener('orientationchange', () => setTimeout(measureHeroLayout, 250));
-  window.addEventListener('load', measureHeroLayout);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureHeroLayout);
-  initAbout();
-  initEventRows();
-  initSectionTransitions();
-  initTechpulseRobot();
-  initFilterTabs();
-  renderEvents();
-  renderUpcoming();
-  renderMembers();
-  initCountdown();
-  initFaqAccordion();
-  initScrollReveals();
-  initStatCounters();
-  initAdminToggle();
-  initFabDrawer();
-  initFormListeners();
+  window.addEventListener('orientationchange', () => setTimeout(() => run(measureHeroLayout), 250));
+  window.addEventListener('load', () => run(measureHeroLayout));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => run(measureHeroLayout));
+
+  run(initAbout);
+  run(initEventRows);
+  run(initSectionTransitions);
+  run(initTechpulseRobot);
+  run(initFilterTabs);
+  run(renderEvents);
+  run(renderUpcoming);
+  run(initCountdown);
+  run(initFaqAccordion);
+  run(initScrollReveals);
+  run(initStatCounters);
+  run(initAdminToggle);
+  run(initFabDrawer);
+  run(initFormListeners);
 });
 
 // Preloader
@@ -789,7 +808,7 @@ function renderEvents() {
     const [main, ...rest] = evt.title.split(' - ');
     const sub = rest.join(' - ');
     return `
-    <article class="ev-row reveal" data-id="${evt.id}" data-img="${evt.image}" tabindex="0" role="button" aria-label="${evt.title}">
+    <a class="ev-row reveal" href="event.html?e=${encodeURIComponent(evt.slug || evt.id)}" data-id="${evt.id}" data-img="${evt.image}" aria-label="${evt.title} - open event page">
       <span class="ev-no">${no}</span>
       <span class="ev-date">${evt.date}</span>
       <div class="ev-main">
@@ -803,27 +822,16 @@ function renderEvents() {
       </div>
       <span class="ev-go">${evt.attendees}+ attended <i>&nearr;</i></span>
       <img class="ev-thumb" src="${evt.image}" alt="" loading="lazy" />
-    </article>`;
+    </a>`;
   }).join('');
 
   initScrollReveals();
 }
 
-// Click / keyboard / hover-photo for the events list (bound once, works across re-renders)
+// Hover-photo for the events list (rows are real links to event.html)
 function initEventRows() {
   const list = document.getElementById('eventsGrid');
   if (!list) return;
-
-  list.addEventListener('click', (e) => {
-    const row = e.target.closest('.ev-row');
-    if (row) openEventModal(row.dataset.id);
-  });
-  list.addEventListener('keydown', (e) => {
-    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('ev-row')) {
-      e.preventDefault();
-      openEventModal(e.target.dataset.id);
-    }
-  });
 
   if (!window.matchMedia('(hover: hover)').matches) return;
 
@@ -909,84 +917,94 @@ function renderUpcoming() {
   const container = document.getElementById('upcomingContainer');
   if (!container) return;
   const up = AppState.data.upcoming;
+  if (!up || !up.registerUrl) return;
+
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const [d1, d2] = up.days;
+  const whenText = `${d1} \u2013 ${d2} ${up.month} ${up.year}`;
 
   container.innerHTML = `
-    <div class="upcoming-editorial-card reveal">
-      <div class="upcoming-layout">
-        <div>
-          <span class="eyebrow" style="margin-bottom: 12px;">Upcoming Masterclass</span>
-          <h2 style="font-size: 2.2rem; margin-bottom: 12px;">${up.title}</h2>
-          <p style="color: var(--text-secondary); margin-bottom: 20px;">${up.description}</p>
-          <div style="font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 6px; margin-bottom: 28px;">
-            <span>Date: ${new Date(up.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}</span>
-            <span>Venue: ${up.venue}</span>
-            <span>Speaker: ${up.speaker}</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-            <button class="btn btn-red" onclick="openRsvpModal()">Claim Pass</button>
-            <span style="font-family: var(--font-mono); font-size: 13px; color: var(--accent-red); font-weight: 500;">
-              ${up.seatsLeft} of ${up.totalSeats} seats remaining
-            </span>
-          </div>
+    <article class="up-poster reveal">
+      <div class="up-bar">
+        <span>${esc(up.festival)}<i></i>${esc(up.category)} event</span>
+        <span>${esc(up.campus)}</span>
+      </div>
+
+      <div class="up-dates" role="img" aria-label="${esc(whenText)}">
+        <span class="up-d1">${esc(d1)}</span>
+        <span class="up-dash"></span>
+        <span class="up-d2">${esc(d2)}</span>
+        <span class="up-month">${esc(up.month)}<br>${esc(up.year)}</span>
+      </div>
+
+      <div class="up-grid">
+        <div class="up-info">
+          <h3 class="up-title">${esc(up.title)}<em>${esc(up.subtitle)}</em></h3>
+          <dl class="up-facts">
+            <div><dt>When</dt><dd>${esc(whenText)}</dd></div>
+            <div><dt>Where</dt><dd>${esc(up.venue)}<span>${esc(up.campus)}</span></dd></div>
+            <div><dt>Track</dt><dd>${esc(up.category)}</dd></div>
+            <div><dt>Registration</dt><dd>Coordinated by TechPulse<span>Hosted on the official Saviskar portal</span></dd></div>
+          </dl>
         </div>
-        <div>
-          <div class="countdown-flex">
-            <div class="countdown-box"><div class="countdown-num" id="cd-days">00</div><div class="countdown-lbl">Days</div></div>
-            <div class="countdown-box"><div class="countdown-num" id="cd-hours">00</div><div class="countdown-lbl">Hours</div></div>
-            <div class="countdown-box"><div class="countdown-num" id="cd-mins">00</div><div class="countdown-lbl">Mins</div></div>
-            <div class="countdown-box"><div class="countdown-num" id="cd-secs">00</div><div class="countdown-lbl">Secs</div></div>
+
+        <div class="up-act">
+          <a class="up-cta" id="upRegister" href="${esc(up.registerUrl)}" target="_blank" rel="noopener" aria-label="Register for ${esc(up.title)} ${esc(up.subtitle)} on the Saviskar website (opens in a new tab)">
+            <svg viewBox="0 0 160 160" aria-hidden="true">
+              <circle class="up-cta-bg" cx="80" cy="80" r="78" />
+              <defs><path id="upRingPath" d="M80,80 m-57,0 a57,57 0 1,1 114,0 a57,57 0 1,1 -114,0" /></defs>
+              <g class="up-ring"><text><textPath href="#upRingPath" textLength="352" lengthAdjust="spacing">REGISTER NOW &#183; REGISTER NOW &#183; REGISTER NOW &#183; </textPath></text></g>
+              <path class="up-arrow" d="M62,98 L98,62 M68,62 H98 V92" />
+            </svg>
+          </a>
+          <a class="up-link" href="${esc(up.eventUrl)}" target="_blank" rel="noopener">Read the event details &nearr;</a>
+
+          <div class="up-count" id="upCount">
+            <span class="up-count-label" id="upLabel">Starts in</span>
+            <div class="up-count-nums">
+              <span><b id="cd-days">00</b><small>days</small></span>
+              <span><b id="cd-hours">00</b><small>hrs</small></span>
+              <span><b id="cd-mins">00</b><small>min</small></span>
+              <span><b id="cd-secs">00</b><small>sec</small></span>
+            </div>
           </div>
-          ${AppState.isAdmin ? `<button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 16px;" onclick="openEditUpcomingModal()">Edit Upcoming</button>` : ''}
         </div>
       </div>
-    </div>
+    </article>
   `;
 
   initScrollReveals();
   updateCountdown();
 }
 
-// Render members
-function renderMembers() {
-  const container = document.getElementById('membersGrid');
-  if (!container) return;
-
-  container.innerHTML = AppState.data.members.map(m => `
-    <div class="member-junca-card reveal ${AppState.isAdmin ? 'admin-mode-active' : ''}">
-      <button class="edit-trigger-btn" onclick="openEditMemberModal('${m.id}')" style="position: absolute; top: 14px; right: 14px;">Edit</button>
-      <div class="member-portrait">
-        <img src="${m.image}" alt="${m.name}" class="member-portrait-img" />
-      </div>
-      <h3 class="member-title-name">${m.name}</h3>
-      <div class="member-title-role">${m.role}</div>
-      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">${m.dept}</div>
-      <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.4;">${m.bio}</p>
-    </div>
-  `).join('');
-
-  initScrollReveals();
-}
-
-// Countdown
+// Countdown to the start; switches to "Happening now" and then "ended"
 function updateCountdown() {
-  const target = new Date(AppState.data.upcoming.date).getTime();
-  const diff = target - Date.now();
-  if (diff < 0) return;
+  const up = AppState.data.upcoming;
+  if (!up) return;
+  const now = Date.now();
+  const start = new Date(up.start || up.date).getTime();
+  const end = new Date(up.end || up.start || up.date).getTime();
 
-  const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const s = Math.floor((diff % (1000 * 60)) / 1000);
+  const box = document.getElementById('upCount');
+  const label = document.getElementById('upLabel');
 
-  const dEl = document.getElementById('cd-days');
-  const hEl = document.getElementById('cd-hours');
-  const mEl = document.getElementById('cd-mins');
-  const sEl = document.getElementById('cd-secs');
+  if (now >= start) {
+    const live = now <= end;
+    if (box) { box.classList.toggle('live', live); box.classList.toggle('done', !live); }
+    if (label) label.textContent = live ? 'Happening now' : 'This event has ended';
+    return;
+  }
+  if (box) box.classList.remove('live', 'done');
+  if (label) label.textContent = 'Starts in';
 
-  if (dEl) dEl.innerText = String(d).padStart(2, '0');
-  if (hEl) hEl.innerText = String(h).padStart(2, '0');
-  if (mEl) mEl.innerText = String(m).padStart(2, '0');
-  if (sEl) sEl.innerText = String(s).padStart(2, '0');
+  const diff = start - now;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v).padStart(2, '0'); };
+  set('cd-days', d); set('cd-hours', h); set('cd-mins', m); set('cd-secs', s);
 }
 
 function initCountdown() {
@@ -1075,7 +1093,6 @@ function initAdminToggle() {
       showToast(AppState.isAdmin ? "Admin Edit Mode Enabled" : "Admin Mode Disabled");
       renderEvents();
       renderUpcoming();
-      renderMembers();
     });
   }
 }
@@ -1088,7 +1105,6 @@ function saveData() {
   }
   renderEvents();
   renderUpcoming();
-  renderMembers();
 }
 
 function openModal(contentHtml) {

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" class="event-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Event | Techpulse</title>
+  <meta name="description" content="Photos, videos and details from a Techpulse event, CCE, CGC University." />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="event-page">
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-wordmark">
+        <img src="logo.png" alt="" class="brand-logo" />
+        <span>Techpulse</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html#about" class="nav-link">About</a></li>
+        <li><a href="index.html#team" class="nav-link">Leadership</a></li>
+        <li><a href="index.html#events" class="nav-link">Events</a></li>
+        <li><a href="index.html#upcoming" class="nav-link">Upcoming</a></li>
+        <li><a href="index.html#department" class="nav-link">CCE Dept</a></li>
+        <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="index.html#events" class="btn btn-red btn-sm">All Events</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <a href="index.html#about" class="mm-link"><i>01</i>About</a>
+    <a href="index.html#team" class="mm-link"><i>02</i>Leadership</a>
+    <a href="index.html#events" class="mm-link"><i>03</i>Events</a>
+    <a href="index.html#upcoming" class="mm-link"><i>04</i>Upcoming</a>
+    <a href="index.html#department" class="mm-link"><i>05</i>CCE Dept</a>
+    <a href="index.html#contact" class="mm-link"><i>06</i>Contact</a>
+  </div>
+
+  <!-- The event page is built by event.js from events-data.js -->
+  <main id="eventRoot" class="evp">
+    <noscript><p style="padding:140px 24px">Please enable JavaScript to view this event.</p></noscript>
+  </main>
+
+  <footer class="footer evp-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>
+          <img src="logo.png" alt="" class="footer-logo" />
+          <strong>Techpulse Studio</strong> • Chandigarh College of Engineering, CGC University.
+        </div>
+        <div><a href="index.html#events" style="color: var(--text-primary); text-decoration: none;">&larr; Back to all events</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- PHOTO VIEWER -->
+  <div class="lb" id="lightbox" aria-hidden="true" role="dialog" aria-label="Photo viewer">
+    <button class="lb-btn lb-close" id="lbClose" aria-label="Close">&times;</button>
+    <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous photo">&larr;</button>
+    <button class="lb-btn lb-next" id="lbNext" aria-label="Next photo">&rarr;</button>
+    <figure class="lb-fig">
+      <img id="lbImg" alt="" />
+      <figcaption id="lbCap"></figcaption>
+    </figure>
+    <span class="lb-count" id="lbCount"></span>
+  </div>
+
+  <script src="events-data.js"></script>
+  <script src="event.js"></script>
+</body>
+</html>
