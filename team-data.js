@@ -1,26 +1,22 @@
 /* ----------------------------------------------------
-   TECHPULSE TEAM DATA  (edit this file to update the team section)
+   TECHPULSE TEAM  -  edit this file to change names, roles and photos
+   ----------------------------------------------------
+   PHOTOS (JPG / PNG / WEBP, portrait 4:5 works best, about 600 x 750 px)
+   Leadership photos go in  images/team/
+     osho-sharma.jpg   yash-verma.jpg   parth-gartan.jpg   yash-sharma.jpg
 
-   PHOTOS
-   Put photos in the  images/team/  folder. If a photo is missing, a
-   coloured initials badge is shown instead, so nothing breaks.
+   Department photos go in  images/team/<department-id>/<name>.jpg
+   where <name> is the person's name in lower case with dashes, e.g.
+     images/team/technical/aryan-dev.jpg
+     images/team/social-media/mandeep-kaur.jpg
+   (the full list of file names is in images/team/README.txt)
 
-   Default photo file names (jpg):
-     Academic coordinator ..... images/team/osho-sharma.jpg
-     President ................ images/team/yash-verma.jpg
-     Vice President ........... images/team/parth-gartan.jpg
-     Secretary ................ images/team/yash-sharma.jpg
-     Department head .......... images/team/<department id>-head.jpg
-     Department member #1 ..... images/team/<department id>-01.jpg
-     Department member #2 ..... images/team/<department id>-02.jpg   ...and so on
+   A person without a photo shows a coloured badge with their initials,
+   so nothing breaks while you collect the photos.
 
-   To use a different file name, write the person as an object:
-     { name: 'Riya Singh', photo: 'images/team/riya.jpg',
-       linkedin: 'https://linkedin.com/in/...', instagram: 'https://instagram.com/...' }
-   ---------------------------------------------------- */
-
-// Quick placeholders: Member 01 ... Member NN  (replace with real names below)
-const placeholders = (n) => Array.from({ length: n }, (_, i) => 'Member ' + String(i + 1).padStart(2, '0'));
+   To use a different file for someone, write them as an object:
+     { name: 'Aryan Dev', photo: 'images/team/my-aryan.png' }
+---------------------------------------------------- */
 
 const TEAM = {
   academicCoordinator: { name: 'Dr. Osho Sharma', role: 'Academic Coordinator', photo: 'images/team/osho-sharma.jpg' },
@@ -35,38 +31,50 @@ const TEAM = {
     {
       id: 'technical', name: 'Technical', icon: '</>', color: '#6CC47F',
       tagline: 'We build, break and ship.',
-      head: 'Department Head',                 // <- replace with the head's name
-      members: placeholders(6)                 // <- or: ['Name 1', 'Name 2', ...]
+      head: { name: 'Parth Gartan', photo: 'images/team/parth-gartan.jpg' },   // same photo as the Vice President card
+      members: ['Aryan Dev', 'Arman', 'Jiyo']
     },
     {
       id: 'social-media', name: 'Social Media & Marketing', short: 'Social & Marketing', icon: '#', color: '#9890C8',
       tagline: 'Giving TechPulse its voice online.',
-      head: 'Department Head',
-      members: placeholders(6)
+      head: {name:'Mandeep Kaur', photo: 'images/team/social-media/mandeep-kaur.jpg'}, 
+      members: ['Shivam Yadav', 'Keshav Painyuli', 'Sakshi', 'Piyush Kumar Shaw', 'Aditya']
     },
     {
-      id: 'design', name: 'Design', icon: '✦', color: '#FF7A59',
+      id: 'design', name: 'Design & Creative', short: 'Design', icon: '\u2726', color: '#FF7A59',
       tagline: 'Where every idea gets its look.',
-      head: 'Department Head',
-      members: placeholders(6)
+      head: 'Darshi',
+      members: ['Vanshika', 'Pradeep Shakya']
     },
     {
-      id: 'photo-video', name: 'Photography & Videography', short: 'Photo & Video', icon: '◎', color: '#5BC0EB',
+      id: 'photo-video', name: 'Photography & Videography', short: 'Photo & Video', icon: '\u25CE', color: '#5BC0EB',
       tagline: 'Every moment, framed.',
-      head: 'Department Head',
-      members: placeholders(6)
+      head: 'Goranshu',
+      members: ['Lucky', 'Shivesh', 'Vivek']
     },
     {
-      id: 'pr-outreach', name: 'PR & Outreach', icon: '↗', color: '#F5C542',
+      id: 'pr-outreach', name: 'PR & Outreach', icon: '\u2197', color: '#F5C542',
       tagline: 'Connecting TechPulse with the world.',
-      head: 'Department Head',
-      members: placeholders(6)
+      head: 'Siya',
+      members: ['Shiva', 'Roshan Kumar']
     },
     {
-      id: 'logistics', name: 'Logistics', icon: '⬡', color: '#E56BA8',
-      tagline: 'Making every event run smoothly.',
-      head: 'Department Head',
-      members: placeholders(6)
+      id: 'logistics', name: 'Logistics & Hospitality', short: 'Logistics', icon: '\u2B21', color: '#E56BA8',
+      tagline: 'Everything ready, everyone looked after.',
+      head: 'Aman',
+      members: ['Utkarsh', 'Pradeep', 'Dev']
+    },
+    {
+      id: 'documentation', name: 'Documentation', icon: '\u00B6', color: '#4FD1C5',
+      tagline: 'Keeping every detail on record.',
+      head: 'Dronacharya',
+      members: ['Vaibhav', 'Bhoumic Garg', 'Varun']
+    },
+    {
+      id: 'event-planning', name: 'Event Planning', short: 'Events', icon: '\u25C8', color: '#C3E36B',
+      tagline: 'From first idea to final applause.',
+      head: 'Ritul Pruthi',
+      members: ['Bhavishya Mamodiya', 'Atul Kumar Yadav', 'Alka', 'Shiva', 'Rohit Kumar']
     }
   ]
 };
